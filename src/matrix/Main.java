@@ -28,11 +28,7 @@ public class Main {
         double direction = 0;
         int command;
 
-        while ((command = inputReader.readCommand()) != 0) {
-
-            if (!Collisions.collides(point, rectangle)) {
-                break;
-            }
+        while (Collisions.collides(point, rectangle) && (command = inputReader.readCommand()) != 0) {
 
             switch (command) {
                 case 1:

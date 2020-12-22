@@ -3,7 +3,6 @@ package matrix;
 import matrix.figures.Point;
 import matrix.figures.Rectangle;
 import matrix.io.InputReader;
-import matrix.util.Collisions;
 
 import java.util.Scanner;
 
@@ -13,7 +12,7 @@ public class Main {
         try (Scanner scanner = new Scanner(System.in)) {
             runProgram(scanner);
         } catch (Exception e) {
-            System.out.println("Invalid input");
+            System.out.println(e.getMessage());
         }
     }
 
@@ -26,18 +25,20 @@ public class Main {
 
         // direction in degrees
         double direction = 0;
-        int command;
 
-        while (Collisions.collides(point, rectangle) && (command = inputReader.readCommand()) != 0) {
+        int[] commands = inputReader.readCommands();
 
+        for (int command : commands) {
             switch (command) {
                 case 1:
-                    point.setX((point.getX() + Math.sin(Math.toRadians(direction))));
-                    point.setY((point.getY() - Math.cos(Math.toRadians(direction))));
+                    point.setX(roundToInt(point.getX() + Math.sin(Math.toRadians(direction))));
+                    point.setY(roundToInt(point.getY() - Math.cos(Math.toRadians(direction))));
+                    if (!rectangle.collides(point)) break;
                     break;
                 case 2:
-                    point.setX((point.getX() - Math.sin(Math.toRadians(direction))));
-                    point.setY((point.getY() + Math.cos(Math.toRadians(direction))));
+                    point.setX(roundToInt(point.getX() - Math.sin(Math.toRadians(direction))));
+                    point.setY(roundToInt(point.getY() + Math.cos(Math.toRadians(direction))));
+                    if (!rectangle.collides(point)) break;
                     break;
                 case 3:
                     direction += 90;
@@ -50,11 +51,15 @@ public class Main {
             direction %= 360;
         }
 
-        if (!Collisions.collides(point, rectangle)) {
+        if (!rectangle.collides(point)) {
             System.out.println("[-1, -1]");
         } else {
-            System.out.println("[" + ((int) Math.round(point.getX())) + ", " + ((int) Math.round(point.getY())) + "]");
+            System.out.println("[" + (point.getX()) + ", " + point.getY() + "]");
         }
+    }
+
+    private static int roundToInt(double value) {
+        return (int) Math.round(value);
     }
 
 }

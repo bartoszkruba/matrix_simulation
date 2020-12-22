@@ -1,11 +1,9 @@
 package matrix.io;
 
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class InputReader {
-    int[] values = {1, 4, 1, 3, 2, 3, 2, 4, 1, 0};
-
-    int i = 0;
 
     private final Scanner scanner;
 
@@ -14,29 +12,61 @@ public class InputReader {
     }
 
     public long[] readHeader() {
-        long[] values = new long[4];
+        String input = scanner.nextLine();
 
-        for (int i = 0; i < 2; i++) {
-            long value = scanner.nextLong();
-            if (value < 1) throw new RuntimeException("Invalid input");
-            values[i] = value;
-        }
+        String[] values = input.split(",");
 
-        for (int i = 0; i < 2; i++) {
-            long value = scanner.nextLong();
-            if (value < 0) throw new RuntimeException("Invalid input");
-            values[i + 2] = value;
-        }
+        if (!validateHeaderInput(values)) throw new RuntimeException("Invalid header");
 
-        return values;
+        return Arrays.stream(values).mapToLong(Long::parseLong).toArray();
     }
 
-    public int readCommand() {
-        int value = scanner.nextInt();
+    public int[] readCommands() {
+        String input = scanner.nextLine();
 
-        if (value < 0 || value > 4) throw new RuntimeException("Invalid input");
+        String[] values = input.split(",");
 
-        return value;
+        if (!validateCommandInput(values)) throw new RuntimeException("Invalid commands");
+
+        return Arrays.stream(values).mapToInt(Integer::parseInt).toArray();
+    }
+
+    private boolean validateHeaderInput(String[] values) {
+        if (values.length != 4) return false;
+
+        for (int i = 0; i < 4; i++) {
+            String value = values[i];
+            try {
+                long convertedValue = Long.parseLong(value);
+                if (convertedValue < 0) return false;
+                if (i < 2 && convertedValue == 0) return false;
+            } catch (Exception e) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private boolean validateCommandInput(String[] values) {
+        int inputLength = values.length;
+
+        if (inputLength == 0) return false;
+
+        for (int i = 0; i < inputLength; i++) {
+            String value = values[i];
+            try {
+                int convertedValue = Integer.parseInt(value);
+
+                if (convertedValue < 0 || convertedValue > 4) return false;
+                if (i == (inputLength - 1) && convertedValue != 0) return false;
+
+            } catch (Exception e) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
 }
